@@ -1,5 +1,7 @@
-import express from "express";
+import jwt from 'jsonwebtoken';
 import mongoose, { Schema } from "mongoose";
+const secretKey = process.env.Secret_Key;
+
 
 const userSchema = new Schema(
   {
@@ -8,7 +10,7 @@ const userSchema = new Schema(
       required: true,
     },
     email : {
-        type : email, 
+        type : String, 
         required : true 
     },
     password : {
@@ -18,5 +20,11 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.generateAuthToken = function () {
+  //Token is generated using data in payload +secretkey
+  const token = jwt.sign({ _id: this._id}, secretKey);
+  return token;
+} 
 
 export const User = mongoose.model("User", userSchema);
